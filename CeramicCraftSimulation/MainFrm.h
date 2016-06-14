@@ -12,7 +12,6 @@ public:
 
 // 特性
 public:
-
 // 操作
 public:
 
@@ -31,6 +30,7 @@ public:
 protected:  // 控件条嵌入成员
 	CToolBar          m_wndToolBar;
 	CStatusBar        m_wndStatusBar;
+	CSliderCtrl		  m_slider;
 
 // 生成的消息映射函数
 protected:

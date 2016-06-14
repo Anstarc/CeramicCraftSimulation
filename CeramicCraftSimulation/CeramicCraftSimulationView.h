@@ -16,7 +16,7 @@ public:
 	CCeramicCraftSimulationDoc* GetDocument() const;
 	int m_GLPixelIndex;
 	HGLRC m_hGLContext;
-	GLfloat rtri;
+	GLfloat rtri, step;
 // 操作
 public:
 
@@ -54,6 +54,7 @@ public:
 	bool SetWindowPixelFormate(HDC hDC);
 	bool CreateViewGLContext(HDC hDC);
 	bool InitGL();
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };
 
 #ifndef _DEBUG  // CeramicCraftSimulationView.cpp 中的调试版本

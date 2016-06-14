@@ -13,6 +13,7 @@
 #define ID_START                        32778
 #define ID_BUTTON32779                  32779
 #define ID_STOP                         32780
+#define IDC_SLIDER						32781
 
 // Next default values for new objects
 // 

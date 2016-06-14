@@ -54,6 +54,23 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // 未能创建
 	}
 
+	//添加滑块
+	///////////////////////////////
+	int index = 14;// 占位符索引
+	int width = 150;// 占位符宽度
+	m_wndToolBar.SetButtonInfo(index, IDC_SLIDER, TBBS_SEPARATOR | TBS_HORZ, width);
+
+	CRect rect;
+	m_wndToolBar.GetItemRect(index, &rect);
+	int height = 25;// ComboBox下拉后高度,尽量长吧。
+	rect.bottom = rect.top + height;
+	m_slider.Create(WS_CHILD | WS_VISIBLE  ,rect, this, IDC_SLIDER);
+
+	m_slider.SetRange(1, 100);
+	m_slider.SetPos(20);
+
+
+	///////////////////////////////
 	if (!m_wndStatusBar.Create(this))
 	{
 		TRACE0("未能创建状态栏\n");

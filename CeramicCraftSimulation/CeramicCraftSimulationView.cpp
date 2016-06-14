@@ -33,6 +33,8 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_COMMAND(ID_START, OnStart)
 	ON_COMMAND(ID_STOP, OnStop)
 	ON_WM_TIMER()
+	ON_WM_HSCROLL()
+	//ON_COMMAND(IDC_SLIDER, OnHScroll)
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -43,6 +45,8 @@ CCeramicCraftSimulationView::CCeramicCraftSimulationView()
 	m_hGLContext = NULL;
 	m_GLPixelIndex = 0;
 	rtri = 0;
+	step = 1;
+
 }
 
 CCeramicCraftSimulationView::~CCeramicCraftSimulationView()
@@ -274,15 +278,15 @@ bool CCeramicCraftSimulationView::InitGL()
 	glShadeModel(GL_SMOOTH);                            // Enable Smooth Shading
 	glClearColor(0.0, 0.0, 0.0, 0.0);// Black Background
 	glClearDepth(1.0f);                                    // Depth Buffer Setup
-	glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
-	glDepthFunc(GL_LEQUAL);                                // The Type Of Depth Testing To Do
+	//glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
+	glDepthFunc(GL_LESS);                                // The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);    // Really Nice Perspective Calculations
 	return TRUE;                                        // Initialization Went OK
 }
 
 void CCeramicCraftSimulationView::OnStart()
 {
-	SetTimer(1, 10, NULL);
+	SetTimer(1, 100, NULL);
 }
 void CCeramicCraftSimulationView::OnStop()
 {
@@ -295,8 +299,20 @@ void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent==1)
 	{
-		rtri += 0.1;
+		rtri += step;
 		OnPaint();
 	}
 	CView::OnTimer(nIDEvent);
+}
+
+
+void CCeramicCraftSimulationView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar*pScrollBar)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	if (pScrollBar==GetDlgItem(IDC_SLIDER))
+	{
+		step = nPos / 20.0;
+	}
+
+	CView::OnHScroll(nSBCode, nPos, pScrollBar);
 }
