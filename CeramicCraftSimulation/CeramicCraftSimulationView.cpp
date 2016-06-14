@@ -30,6 +30,9 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_PAINT()
+	ON_COMMAND(ID_START, OnStart)
+	ON_COMMAND(ID_STOP, OnStop)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -39,6 +42,7 @@ CCeramicCraftSimulationView::CCeramicCraftSimulationView()
 	// TODO:  在此处添加构造代码
 	m_hGLContext = NULL;
 	m_GLPixelIndex = 0;
+	rtri = 0;
 }
 
 CCeramicCraftSimulationView::~CCeramicCraftSimulationView()
@@ -180,7 +184,6 @@ void CCeramicCraftSimulationView::OnPaint()
 	if (pDoc->m_pmesh == NULL)
 		return;
 
-	GLfloat rtri = 0;
 	CPaintDC dc(this); // device context for painting
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
@@ -277,3 +280,23 @@ bool CCeramicCraftSimulationView::InitGL()
 	return TRUE;                                        // Initialization Went OK
 }
 
+void CCeramicCraftSimulationView::OnStart()
+{
+	SetTimer(1, 10, NULL);
+}
+void CCeramicCraftSimulationView::OnStop()
+{
+	KillTimer(1);
+}
+
+
+void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	if (nIDEvent==1)
+	{
+		rtri += 0.1;
+		OnPaint();
+	}
+	CView::OnTimer(nIDEvent);
+}

@@ -98,6 +98,7 @@ BEGIN
     BUTTON      ID_APP_ABOUT
     SEPARATOR
     BUTTON      ID_START
+    BUTTON      ID_STOP
 END
 
 

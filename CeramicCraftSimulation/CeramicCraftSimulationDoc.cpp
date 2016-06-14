@@ -50,7 +50,10 @@ BOOL CCeramicCraftSimulationDoc::OnNewDocument()
 	// TODO:  在此添加重新初始化代码
 	// (SDI 文档将重用该文档)
 
+	InitMesh();
+
 	return TRUE;
+	
 }
 
 
@@ -178,5 +181,19 @@ void CCeramicCraftSimulationDoc::OnImport()
 	}
 
 	UpdateAllViews(NULL);
+
+}
+
+void CCeramicCraftSimulationDoc::InitMesh()
+{
+	if (m_pmesh == NULL) {
+		m_pmesh = new Mesh3D;
+	}
+
+	GetCurrentDirectory(sizeof(buf), (LPWSTR)buf);
+	CStringA  ss((LPWSTR)buf);
+	ss += "\\Cylinder.obj";
+	//if (!m_pmesh->load_obj((LPCSTR)(ss)))
+	m_pmesh->load_obj((LPCSTR)(ss));
 
 }

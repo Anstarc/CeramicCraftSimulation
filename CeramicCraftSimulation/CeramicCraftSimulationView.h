@@ -16,6 +16,7 @@ public:
 	CCeramicCraftSimulationDoc* GetDocument() const;
 	int m_GLPixelIndex;
 	HGLRC m_hGLContext;
+	GLfloat rtri;
 // ²Ù×÷
 public:
 
@@ -46,6 +47,10 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnPaint();
+	afx_msg void OnStart();
+	afx_msg void OnStop();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
 	bool SetWindowPixelFormate(HDC hDC);
 	bool CreateViewGLContext(HDC hDC);
 	bool InitGL();
