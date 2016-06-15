@@ -52,7 +52,10 @@
       <Filter>Mesh3D</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>头文件</Filter>
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="HE_Struct.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,7 +81,7 @@
       <Filter>Mesh3D</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

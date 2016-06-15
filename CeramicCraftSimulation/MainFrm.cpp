@@ -60,7 +60,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	///////////////////////////////
 	int index = 14;// 占位符索引
 	int width = 150;// 占位符宽度
-	int height = 25;
+	int height = 24;
 
 	m_wndToolBar.SetButtonInfo(index, IDC_SLIDER, TBBS_SEPARATOR | TBS_HORZ, width);
 

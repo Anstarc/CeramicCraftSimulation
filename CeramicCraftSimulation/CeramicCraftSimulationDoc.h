@@ -17,7 +17,7 @@ protected: // 仅从序列化创建
 // 特性
 public:
 	Mesh3D* m_pmesh;
-	Model* m_pmodel;
+	//Model* m_pmodel;
 	char buf[100];
 // 操作
 public:

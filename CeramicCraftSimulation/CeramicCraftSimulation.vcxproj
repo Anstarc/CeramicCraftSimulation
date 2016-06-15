@@ -104,6 +104,7 @@
     <ClInclude Include="CeramicCraftSimulationDoc.h" />
     <ClInclude Include="CeramicCraftSimulationView.h" />
     <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="HE_Struct.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mesh3D.h" />
     <ClInclude Include="Model.h" />

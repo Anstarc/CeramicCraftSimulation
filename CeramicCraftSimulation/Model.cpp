@@ -2,22 +2,22 @@
 #include "Model.h"
 
 
-bool Model::VertToCCVert(Mesh3D* m_pmesh)
+bool Model::VertToCVert()
 {
-	clear_data();
 
-}
-
-HE_vert* Model::insert_rcvertex(float x, float y, float z)
-{
-	float r = sqrt(x*x + z*z);
-	HE_vert* hv = new HE_vert(acos(x / r), r, y);
-	if (vertices_list == NULL) {
-		vertices_list = new VERTEX_LIST;
+	for (VERTEX_ITER viter = vertices_list->begin(); viter != vertices_list->end(); viter++)
+	{
+		//(*viter)->RC_To_CC();
 	}
-	hv->id = (int)vertices_list->size();
-	vertices_list->push_back(hv);
-
-	return hv;
+	return true;
 }
 
+
+bool Model::CVertToVert()
+{
+	for (VERTEX_ITER viter = vertices_list->begin(); viter != vertices_list->end(); viter++)
+	{
+		//(*viter)->CC_To_RC();
+	}
+	return true;
+}
