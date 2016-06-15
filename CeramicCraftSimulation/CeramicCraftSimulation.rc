@@ -99,8 +99,9 @@ BEGIN
     SEPARATOR
     BUTTON      ID_START
     BUTTON      ID_STOP
-	SEPARATOR
-	SEPARATOR
+    SEPARATOR
+    SEPARATOR
+    SEPARATOR
 END
 
 
@@ -144,8 +145,9 @@ BEGIN
         MENUITEM "保存(&S)\tCtrl+S",              ID_FILE_SAVE
         MENUITEM SEPARATOR
         MENUITEM "导入",                          ID_IMPORT
+        MENUITEM "导出",                          ID_EXPORT
         MENUITEM SEPARATOR
-        MENUITEM "另存为(&A)...",                  ID_FILE_SAVE_AS
+        MENUITEM "捕获图像",                        ID_CAPTURE
         MENUITEM SEPARATOR
         MENUITEM "打印(&P)...\tCtrl+P",           ID_FILE_PRINT
         MENUITEM "打印预览(&V)",                    ID_FILE_PRINT_PREVIEW

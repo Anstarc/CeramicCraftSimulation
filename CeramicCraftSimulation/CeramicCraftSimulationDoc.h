@@ -5,6 +5,7 @@
 
 #pragma once
 #include "Mesh3D.h"
+#include "Model.h"
 
 
 class CCeramicCraftSimulationDoc : public CDocument
@@ -16,6 +17,7 @@ protected: // 仅从序列化创建
 // 特性
 public:
 	Mesh3D* m_pmesh;
+	Model* m_pmodel;
 	char buf[100];
 // 操作
 public:
@@ -43,6 +45,8 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnImport();
+	afx_msg void OnExport();
+	afx_msg void OnCapture();
 
 #ifdef SHARED_HANDLERS
 	// 用于为搜索处理程序设置搜索内容的 Helper 函数
@@ -50,4 +54,5 @@ protected:
 #endif // SHARED_HANDLERS
 public:
 	void InitMesh();
+	bool WriteBitmapFile(char * filename, int width, int height, unsigned char * bitmapData);
 };

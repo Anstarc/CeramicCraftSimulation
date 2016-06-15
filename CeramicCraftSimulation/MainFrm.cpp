@@ -21,6 +21,7 @@ const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 
 BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_WM_CREATE()
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -36,6 +37,7 @@ static UINT indicators[] =
 CMainFrame::CMainFrame()
 {
 	// TODO:  在此添加成员初始化代码
+	pLP = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -58,16 +60,33 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	///////////////////////////////
 	int index = 14;// 占位符索引
 	int width = 150;// 占位符宽度
+	int height = 25;
+
 	m_wndToolBar.SetButtonInfo(index, IDC_SLIDER, TBBS_SEPARATOR | TBS_HORZ, width);
 
 	CRect rect;
 	m_wndToolBar.GetItemRect(index, &rect);
-	int height = 25;// ComboBox下拉后高度,尽量长吧。
 	rect.bottom = rect.top + height;
 	m_slider.Create(WS_CHILD | WS_VISIBLE  ,rect, this, IDC_SLIDER);
 
 	m_slider.SetRange(1, 100);
 	m_slider.SetPos(20);
+
+
+	///////////////////////////////
+	//添加调色板
+	///////////////////////////////
+	index = 15;// 占位符索引
+	width = 150;// 占位符宽度
+	m_wndToolBar.SetButtonInfo(index, IDC_PALETTE, TBBS_SEPARATOR , width);
+
+	CRect rect1;
+	m_wndToolBar.GetItemRect(index, &rect);
+	height = 100;// ComboBox下拉后高度,尽量长吧。
+	rect1.bottom = rect1.top + height;
+	CreatePalette();
+
+	//m_slider.Create(WS_CHILD | WS_VISIBLE, rect1, this, IDC_SLIDER);
 
 
 	///////////////////////////////
@@ -116,3 +135,36 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 // CMainFrame 消息处理程序
 
+
+
+void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	if (pScrollBar == GetDlgItem(IDC_SLIDER))
+	{
+		step = nPos / 10.0;
+	}
+	//GetActiveView()->SendMessage(WM_HSCROLL);
+	CMDIFrameWnd::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+bool CMainFrame::CreatePalette()
+{
+	const int nColors = 24; 
+	BYTE R[nColors], G[nColors], B[nColors];
+	UINT nSize = sizeof(LOGPALETTE)+(sizeof(PALETTEENTRY)*(nColors - 1)); //计算逻辑调色板所需空间
+	pLP = (LOGPALETTE*) new BYTE[nSize];
+	//初始化逻辑调色板，假设R,G,B 保存的是调色板各颜色红，绿，蓝三个分量的数组
+	pLP->palVersion = 0x300; //固定值
+	pLP->palNumEntries = nColors;
+	for (int i = 0; i < nColors; i++)
+	{
+		pLP->palPalEntry[i].peRed = R[i];
+		pLP->palPalEntry[i].peGreen = G[i];
+		pLP->palPalEntry[i].peBlue = B[i];
+		pLP->palPalEntry[i].peFlags = 0;
+	}
+	m_palette.CreatePalette(pLP);
+	return true;
+}

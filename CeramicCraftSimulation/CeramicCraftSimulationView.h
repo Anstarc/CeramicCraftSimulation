@@ -16,7 +16,7 @@ public:
 	CCeramicCraftSimulationDoc* GetDocument() const;
 	int m_GLPixelIndex;
 	HGLRC m_hGLContext;
-	GLfloat rtri, step;
+	GLfloat rtri;
 // ²Ù×÷
 public:
 

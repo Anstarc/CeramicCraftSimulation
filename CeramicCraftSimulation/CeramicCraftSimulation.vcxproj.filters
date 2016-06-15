@@ -16,6 +16,9 @@
     <Filter Include="Mesh3D">
       <UniqueIdentifier>{cb9ff7fc-abcf-47cf-a3cf-586ff784538c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{194bd3da-bc47-4c51-85d3-c891330e13f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -48,6 +51,9 @@
     <ClInclude Include="Mesh3D.h">
       <Filter>Mesh3D</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CeramicCraftSimulation.cpp">
@@ -70,6 +76,9 @@
     </ClCompile>
     <ClCompile Include="Mesh3D.cpp">
       <Filter>Mesh3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

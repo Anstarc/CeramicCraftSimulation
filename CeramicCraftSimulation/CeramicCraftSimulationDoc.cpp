@@ -23,6 +23,8 @@ IMPLEMENT_DYNCREATE(CCeramicCraftSimulationDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CCeramicCraftSimulationDoc, CDocument)
 	ON_COMMAND(ID_IMPORT, OnImport)
+	ON_COMMAND(ID_EXPORT, OnExport)
+	ON_COMMAND(ID_CAPTURE,OnCapture)
 END_MESSAGE_MAP()
 
 
@@ -146,7 +148,7 @@ void CCeramicCraftSimulationDoc::Dump(CDumpContext& dc) const
 void CCeramicCraftSimulationDoc::OnImport()
 {
 	// TODO:  在此添加命令处理程序代码
-	CString lpszFilter = _T("Obj files (*.obj)|*.obj|Off files (*.off)|*.off||");
+	CString lpszFilter = _T("Obj files (*.obj)|*.obj||");
 	CFileDialog dlg(true, NULL, NULL, OFN_READONLY, lpszFilter);
 	dlg.m_ofn.lpstrTitle = _T("Import 3D model");		////
 	dlg.m_ofn.lpstrDefExt = _T("obj");
@@ -164,12 +166,7 @@ void CCeramicCraftSimulationDoc::OnImport()
 		extension = extension.Right(extension.GetLength() - extension.ReverseFind('.'));
 		extension.MakeLower();
 
-		if (extension == ".off")
-		{
-			CStringA   ss(strFile);
-			m_pmesh->load_off((LPCSTR)(ss));
-		}
-		else if (extension == ".obj")
+		if (extension == ".obj")
 		{
 			//const char * ss = CString2constchar(strFile);
 			CStringA  ss(strFile);
@@ -196,4 +193,109 @@ void CCeramicCraftSimulationDoc::InitMesh()
 	//if (!m_pmesh->load_obj((LPCSTR)(ss)))
 	m_pmesh->load_obj((LPCSTR)(ss));
 
+}
+
+
+void CCeramicCraftSimulationDoc::OnExport()
+{
+	// TODO:  在此添加命令处理程序代码
+	if (m_pmesh == NULL) {
+		return;
+	}
+	CString lpszFilter = _T("Obj files (*.obj)|*.obj||");
+	CFileDialog dlg(true, NULL, NULL, OFN_READONLY, lpszFilter);
+	dlg.m_ofn.lpstrTitle = _T("Export 3D model");		////
+	dlg.m_ofn.lpstrDefExt = _T("obj");
+	if (dlg.DoModal() == IDOK && m_pmesh)
+	{
+
+		CString		strFile = dlg.GetPathName();
+
+		CString extension = strFile;
+		extension = extension.Right(extension.GetLength() - extension.ReverseFind('.'));
+		extension.MakeLower();
+		
+		if (extension == ".obj")
+		{
+			//const char * ss = CString2constchar(strFile);
+			CStringA  ss(strFile);
+			m_pmesh->load_obj((LPCSTR)(ss));
+		}
+	}
+}
+
+
+void CCeramicCraftSimulationDoc::OnCapture()
+{
+	int clnWidth, clnHeight;	//client width and height
+	static void * screenData;
+
+	POSITION   pos = GetFirstViewPosition(); 
+	CView* pView = GetNextView(pos);
+	RECT rc; pView->GetClientRect(&rc);
+	clnWidth = rc.right - rc.left; clnHeight = rc.bottom - rc.top;
+
+	int len = clnWidth * clnHeight * 3;
+	screenData = malloc(len);
+	memset(screenData, 0, len);
+	glReadPixels(0, 0, clnWidth, clnHeight, GL_RGB, GL_UNSIGNED_BYTE, screenData);
+
+	//生成文件名字符串，以时间命名
+	char lpstrFilename[256] = { 0 };
+	sprintf_s(lpstrFilename, sizeof(lpstrFilename), "%d.bmp", time(NULL));
+
+	WriteBitmapFile(lpstrFilename, clnWidth, clnHeight, (unsigned char*)screenData);
+	//释放内存
+	free(screenData);
+
+}
+
+
+bool CCeramicCraftSimulationDoc::WriteBitmapFile(char * filename, int width, int height, unsigned char * bitmapData)
+{
+	//填充BITMAPFILEHEADER
+	BITMAPFILEHEADER bitmapFileHeader;
+	memset(&bitmapFileHeader, 0, sizeof(BITMAPFILEHEADER));
+	bitmapFileHeader.bfSize = sizeof(BITMAPFILEHEADER);
+	bitmapFileHeader.bfType = 0x4d42;	//BM
+	bitmapFileHeader.bfOffBits = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER);
+
+	//填充BITMAPINFOHEADER
+	BITMAPINFOHEADER bitmapInfoHeader;
+	memset(&bitmapInfoHeader, 0, sizeof(BITMAPINFOHEADER));
+	bitmapInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bitmapInfoHeader.biWidth = width;
+	bitmapInfoHeader.biHeight = height;
+	bitmapInfoHeader.biPlanes = 1;
+	bitmapInfoHeader.biBitCount = 24;
+	bitmapInfoHeader.biCompression = BI_RGB;
+	bitmapInfoHeader.biSizeImage = width * abs(height) * 3;
+
+	//////////////////////////////////////////////////////////////////////////
+	FILE * filePtr;			//连接要保存的bitmap文件用
+	unsigned char tempRGB;	//临时色素
+	int imageIdx;
+
+	//交换R、B的像素位置,bitmap的文件放置的是BGR,内存的是RGB
+	for (imageIdx = 0; imageIdx < bitmapInfoHeader.biSizeImage; imageIdx += 3)
+	{
+		tempRGB = bitmapData[imageIdx];
+		bitmapData[imageIdx] = bitmapData[imageIdx + 2];
+		bitmapData[imageIdx + 2] = tempRGB;
+	}
+
+	filePtr = fopen(filename, "wb");
+	if (NULL == filePtr)
+	{
+		return FALSE;
+	}
+
+	fwrite(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+
+	fwrite(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr);
+
+	fwrite(bitmapData, bitmapInfoHeader.biSizeImage, 1, filePtr);
+
+	fclose(filePtr);
+	return TRUE;
 }

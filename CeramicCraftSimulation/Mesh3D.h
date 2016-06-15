@@ -225,7 +225,7 @@ public:
 	void compute_all_normal();
 	void compute_boundingbox();
 
-private:
+protected:
 
 
 	HE_edge* insert_edge(HE_vert* vstart, HE_vert* vend); // it is called by insert_face automatically
