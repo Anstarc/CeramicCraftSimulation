@@ -67,12 +67,13 @@ struct vector3f
 #include <list>
 #include <vector>
 #include <string>
-#include <cmath> //i.e., #include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <map>
 #include <iostream>
 #include <fstream>
 #include <cassert>
+#define PI 3.1415926
 //#include "HE_Struct.h"
 
 //redefine types for programming easily
@@ -224,9 +225,9 @@ public:
 	void compute_all_normal();
 	void compute_boundingbox();
 
-	//
+	//---------------------------------------------------------------------
 	HE_vert * NearestVert(float x, float y, float z);
-	void Reshape(float x, float y, float z, float move);
+	void Reshape(HE_vert* v, float move);
 	void ReshapeNearVert(int id, float move);
 
 	//
@@ -234,12 +235,13 @@ public:
 	{
 		return sqrt(v->x*v->x + v->z*v->z);
 	}
-	float ComputeVertA(HE_vert *v)
-	{
-		int k = 0 ? 180 : v->z >= 0;
-		return k + acos(v->x / ComputeVertR(v));
-	}
+	float ComputeVertA(HE_vert *v);
+
 	HE_vert *LeftVert(HE_vert *v);
+
+	//---------------------------------------------------------------------
+
+	void clear_data();
 
 protected:
 
@@ -247,7 +249,6 @@ protected:
 	HE_edge* insert_edge(HE_vert* vstart, HE_vert* vend); // it is called by insert_face automatically
 
 	//clear data
-	void clear_data();
 	void clear_vertices();
 	void clear_edges();
 	void clear_faces();

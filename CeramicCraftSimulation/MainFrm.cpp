@@ -142,7 +142,7 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (pScrollBar == GetDlgItem(IDC_SLIDER))
 	{
-		step = nPos / 10.0;
+		step = nPos / 10.0 * 12;
 	}
 	//GetActiveView()->SendMessage(WM_HSCROLL);
 	CMDIFrameWnd::OnHScroll(nSBCode, nPos, pScrollBar);

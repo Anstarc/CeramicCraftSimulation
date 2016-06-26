@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationDoc, CDocument)
 	ON_COMMAND(ID_IMPORT, OnImport)
 	ON_COMMAND(ID_EXPORT, OnExport)
 	ON_COMMAND(ID_CAPTURE,OnCapture)
+	ON_COMMAND(ID_RELOAD, OnReload)
 END_MESSAGE_MAP()
 
 
@@ -298,4 +299,13 @@ bool CCeramicCraftSimulationDoc::WriteBitmapFile(char * filename, int width, int
 
 	fclose(filePtr);
 	return TRUE;
+}
+
+
+void CCeramicCraftSimulationDoc::OnReload()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_pmesh->clear_data();
+	InitMesh();
+
 }

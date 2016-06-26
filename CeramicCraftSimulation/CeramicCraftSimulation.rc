@@ -144,6 +144,7 @@ BEGIN
         MENUITEM "关闭(&C)",                      ID_FILE_CLOSE
         MENUITEM "保存(&S)\tCtrl+S",              ID_FILE_SAVE
         MENUITEM SEPARATOR
+        MENUITEM "重新载入模型",                      32785
         MENUITEM "导入",                          ID_IMPORT
         MENUITEM "导出",                          ID_EXPORT
         MENUITEM SEPARATOR
@@ -156,14 +157,6 @@ BEGIN
         MENUITEM "最近的文件",                       ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "退出(&X)",                      ID_APP_EXIT
-    END
-    POPUP "编辑(&E)"
-    BEGIN
-        MENUITEM "撤消(&U)\tCtrl+Z",              ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
-        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
-        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
     END
     POPUP "视图(&V)"
     BEGIN
@@ -180,6 +173,10 @@ BEGIN
     POPUP "帮助(&H)"
     BEGIN
         MENUITEM "关于 CeramicCraftSimulation(&A)...", ID_APP_ABOUT
+    END
+    POPUP "演示"
+    BEGIN
+        MENUITEM "碗",                           ID_BOWL
     END
 END
 

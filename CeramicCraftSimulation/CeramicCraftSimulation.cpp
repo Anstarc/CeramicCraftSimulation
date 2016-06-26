@@ -179,8 +179,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-//	ON_WM_LBUTTONDOWN()
-//	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 // 用于运行对话框的应用程序命令

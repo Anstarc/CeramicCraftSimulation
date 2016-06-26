@@ -59,4 +59,4 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
-extern  int step;
+extern  float step;

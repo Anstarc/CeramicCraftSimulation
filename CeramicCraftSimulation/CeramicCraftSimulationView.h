@@ -16,7 +16,13 @@ public:
 	CCeramicCraftSimulationDoc* GetDocument() const;
 	int m_GLPixelIndex;
 	HGLRC m_hGLContext;
-	GLfloat rtri;
+
+	GLfloat rtri,currentVertA;
+	HE_vert* currentVert;
+
+	HE_vert* firstVert;
+	float firstMoveLength;
+
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];

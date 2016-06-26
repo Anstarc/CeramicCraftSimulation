@@ -951,7 +951,8 @@ void Mesh3D::gl_draw(bool smooth)
 
 }
 
-
+//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- 
 HE_vert * Mesh3D::NearestVert(float x, float y, float z)
 {
 	float dis, temp;
@@ -976,14 +977,11 @@ HE_vert * Mesh3D::NearestVert(float x, float y, float z)
 	return nearestVert;
 }
 
-void Mesh3D::Reshape(float x, float y, float z, float move)
+void Mesh3D::Reshape(HE_vert* v, float move)
 {
-	HE_vert* v=NearestVert(x, y, z);
 
-
-	float r = sqrt(x*x + z*z);
-	v->x *= (r / ComputeVertR(v));
-	v->z *= (r / ComputeVertR(v));
+	v->x *= (move / ComputeVertR(v) + 1);
+	v->z *= (move / ComputeVertR(v) + 1);
 
 	ReshapeNearVert(v->id, move);
 }
@@ -1001,7 +999,10 @@ HE_vert *Mesh3D::LeftVert(HE_vert *v)
 	do
 	{
 		currentVert = edge->vert;
-		if (ComputeVertA(currentVert)>ComputeVertA(v)&&currentVert->y==v->y)
+		TRACE("ÏàÁÚµã£º%lf ,%lf %lf\n", currentVert->x, currentVert->y, currentVert->z);
+		TRACE("½Ç¶È£º%f\n", ComputeVertA(v));
+
+		if ((ComputeVertA(currentVert) > ComputeVertA(v) || (ComputeVertA(currentVert)<0.6 && ComputeVertA(v)>6)) && fabs(currentVert->y - v->y) < 0.1)
 		{
 			leftVert = currentVert;
 			break;
@@ -1011,4 +1012,13 @@ HE_vert *Mesh3D::LeftVert(HE_vert *v)
 	} while (edge != v->edge);
 
 	return leftVert;
+}
+
+
+float Mesh3D::ComputeVertA(HE_vert *v)
+{
+	float k = acos(v->x / ComputeVertR(v));
+	if (v->z <= 0 && v->x != 5)
+		k = 2 * PI - k;
+	return k;
 }

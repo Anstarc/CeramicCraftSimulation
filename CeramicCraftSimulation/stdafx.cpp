@@ -6,7 +6,7 @@
 #include "stdafx.h"
 
 
-int step = 1;
+float step = 12;
 
 
 

@@ -284,8 +284,6 @@ bool CCeramicCraftSimulationView::InitGL()
 	glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
 	glDepthFunc(GL_LESS);                                // The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);    // Really Nice Perspective Calculations
-	glTranslatef(0.0f, -7.0f, -26.0f);						// Move Left 1.5 Units And Into The Screen 6.0
-	glRotatef(rtri, 0.0f, 1.0f, 0.0f);						// Rotate The Triangle On The Y axis ( NEW )
 
 	return TRUE;                                        // Initialization Went OK
 }
@@ -306,6 +304,8 @@ void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent==1)
 	{
 		rtri += step;
+		if (rtri >= 360)
+			rtri -= 360;
 		if (reshape)
 			OnReshape();
 		OnPaint();
@@ -352,6 +352,14 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 	
 	TRACE("%lf ,%lf %lf\n", object_x, object_y, object_z);
 
+	currentVertA = rtri;
+	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
+	if (!pDoc)
+		return;
+	currentVert = pDoc->m_pmesh->NearestVert(object_x, object_y, object_z);
+	firstVert = currentVert;
+	firstMoveLength = 0;
+
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -359,7 +367,7 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 void CCeramicCraftSimulationView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	reshape = false;
+	//reshape = false;
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -368,11 +376,27 @@ void CCeramicCraftSimulationView::OnReshape()
 {
 	CPoint point;
 	GetCursorPos(&point);
-	moveLength = point.x - winX;
+	//if (rtri - currentVertA >= 360)
+	//{
+	//	winX += firstMoveLength;
+	//	currentVertA -= 360;
+
+	//}
+
+	//if (firstMoveLength==0&&currentVert==firstVert)
+		firstMoveLength = moveLength = point.x - winX;
+
+
 	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
 	if (!pDoc)
-	{
 		return;
+
+	if (rtri - currentVertA >= 12)
+		currentVert = pDoc->m_pmesh->LeftVert(currentVert);
+	if (!currentVert){
+		TRACE("!!currentVert Invalued\n");
 	}
-	pDoc->m_pmesh->Reshape(object_x, object_y, object_z, moveLength);
+	TRACE("%f %f %f\n", currentVert->x, currentVert->y, currentVert->z);
+
+	pDoc->m_pmesh->Reshape(currentVert, moveLength / 100);
 }

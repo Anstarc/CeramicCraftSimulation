@@ -55,4 +55,5 @@ protected:
 public:
 	void InitMesh();
 	bool WriteBitmapFile(char * filename, int width, int height, unsigned char * bitmapData);
+	afx_msg void OnReload();
 };
