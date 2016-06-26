@@ -17,6 +17,15 @@ public:
 	int m_GLPixelIndex;
 	HGLRC m_hGLContext;
 	GLfloat rtri;
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+
+	double winX, winY, object_x, object_y, object_z;
+	float winZ;
+	float moveLength;
+	bool reshape;
+
 // 操作
 public:
 
@@ -55,6 +64,9 @@ public:
 	bool CreateViewGLContext(HDC hDC);
 	bool InitGL();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	void OnReshape();
 };
 
 #ifndef _DEBUG  // CeramicCraftSimulationView.cpp 中的调试版本

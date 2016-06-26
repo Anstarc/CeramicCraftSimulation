@@ -950,3 +950,65 @@ void Mesh3D::gl_draw(bool smooth)
 	}
 
 }
+
+
+HE_vert * Mesh3D::NearestVert(float x, float y, float z)
+{
+	float dis, temp;
+	HE_vert *nearestVert;
+
+	//Init
+	VERTEX_ITER viter = vertices_list->begin();
+	dis = (x - (*viter)->x)*(x - (*viter)->x) + (y - (*viter)->y)*(y - (*viter)->y) + (z - (*viter)->z)*(z - (*viter)->z);
+	nearestVert = *viter;
+	viter++;
+
+	//
+	for (; viter != vertices_list->end(); viter++)
+	{
+		temp = (x - (*viter)->x)*(x - (*viter)->x) + (y - (*viter)->y)*(y - (*viter)->y) + (z - (*viter)->z)*(z - (*viter)->z);
+		if (temp<dis)
+		{
+			dis = temp;
+			nearestVert = *viter;
+		}
+	}
+	return nearestVert;
+}
+
+void Mesh3D::Reshape(float x, float y, float z, float move)
+{
+	HE_vert* v=NearestVert(x, y, z);
+
+
+	float r = sqrt(x*x + z*z);
+	v->x *= (r / ComputeVertR(v));
+	v->z *= (r / ComputeVertR(v));
+
+	ReshapeNearVert(v->id, move);
+}
+
+void Mesh3D::ReshapeNearVert(int id, float move)
+{
+	
+}
+
+HE_vert *Mesh3D::LeftVert(HE_vert *v)
+{
+	HE_vert* leftVert = NULL;
+	HE_vert* currentVert = NULL;
+	HE_edge * edge = v->edge;
+	do
+	{
+		currentVert = edge->vert;
+		if (ComputeVertA(currentVert)>ComputeVertA(v)&&currentVert->y==v->y)
+		{
+			leftVert = currentVert;
+			break;
+		}
+		edge = edge->pair;
+		edge = edge->next;
+	} while (edge != v->edge);
+
+	return leftVert;
+}

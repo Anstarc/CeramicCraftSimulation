@@ -219,7 +219,7 @@ void CCeramicCraftSimulationDoc::OnExport()
 		{
 			//const char * ss = CString2constchar(strFile);
 			CStringA  ss(strFile);
-			m_pmesh->load_obj((LPCSTR)(ss));
+			m_pmesh->write_obj((LPCSTR)(ss));
 		}
 	}
 }

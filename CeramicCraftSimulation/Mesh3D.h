@@ -6,54 +6,54 @@
 
 //for understanding halfedge structure,  please read the article in http://www.flipcode.com/articles/article_halfedge.shtml
 
-//class HE_vert;
-//class HE_face;
-//class HE_edge;
-//
-//class HE_vert
-//{
-//public:
-//	float x, y, z;		//3d coordinates
-//	HE_edge* edge;		// one of the half-edges_list emanating from the vertex
-//	float normal[3];	// vertex normal
-//	int id;				// index 
-//	int degree;			// vertex degree
-//	bool tag;			// tag for programming easily
-//public:
-//	HE_vert(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
-//		:x(_x), y(_y), z(_z), edge(NULL), id(-1), degree(0), tag(false)
-//	{}
-//};
-//
-//class HE_edge
-//{
-//public:
-//	HE_vert* vert;   // vertex at the end of the half-edge
-//	HE_edge* pair;   // oppositely oriented adjacent half-edge 
-//	HE_face* face;   // face the half-edge borders
-//	HE_edge* next;   // next half-edge around the face
-//	int id;			 // index
-//	bool tag;		 // tag for programming easily
-//public:
-//	HE_edge()
-//		:vert(NULL), pair(NULL), face(NULL), next(NULL), id(-1), tag(false)
-//	{  }
-//};
-//
-//class HE_face
-//{
-//public:
-//	HE_edge* edge;		// one of the half-edges_list bordering the face	
-//	int valence;		// the number of edges_list 
-//	float normal[3];	// face normal
-//	int id;				// index
-//	bool tag;           // tag for programming easily
-//public:
-//	HE_face()
-//		:edge(NULL), id(-1), tag(false)
-//	{}
-//
-//};
+class HE_vert;
+class HE_face;
+class HE_edge;
+
+class HE_vert
+{
+public:
+	float x, y, z;		//3d coordinates
+	HE_edge* edge;		// one of the half-edges_list emanating from the vertex
+	float normal[3];	// vertex normal
+	int id;				// index 
+	int degree;			// vertex degree
+	bool tag;			// tag for programming easily
+public:
+	HE_vert(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f)
+		:x(_x), y(_y), z(_z), edge(NULL), id(-1), degree(0), tag(false)
+	{}
+};
+
+class HE_edge
+{
+public:
+	HE_vert* vert;   // vertex at the end of the half-edge
+	HE_edge* pair;   // oppositely oriented adjacent half-edge 
+	HE_face* face;   // face the half-edge borders
+	HE_edge* next;   // next half-edge around the face
+	int id;			 // index
+	bool tag;		 // tag for programming easily
+public:
+	HE_edge()
+		:vert(NULL), pair(NULL), face(NULL), next(NULL), id(-1), tag(false)
+	{  }
+};
+
+class HE_face
+{
+public:
+	HE_edge* edge;		// one of the half-edges_list bordering the face	
+	int valence;		// the number of edges_list 
+	float normal[3];	// face normal
+	int id;				// index
+	bool tag;           // tag for programming easily
+public:
+	HE_face()
+		:edge(NULL), id(-1), tag(false)
+	{}
+
+};
 
 //simple 3d vector
 struct vector3f
@@ -73,7 +73,7 @@ struct vector3f
 #include <iostream>
 #include <fstream>
 #include <cassert>
-#include "HE_Struct.h"
+//#include "HE_Struct.h"
 
 //redefine types for programming easily
 
@@ -223,6 +223,23 @@ public:
 	void gl_draw(bool smooth=false);
 	void compute_all_normal();
 	void compute_boundingbox();
+
+	//
+	HE_vert * NearestVert(float x, float y, float z);
+	void Reshape(float x, float y, float z, float move);
+	void ReshapeNearVert(int id, float move);
+
+	//
+	float ComputeVertR(HE_vert *v)
+	{
+		return sqrt(v->x*v->x + v->z*v->z);
+	}
+	float ComputeVertA(HE_vert *v)
+	{
+		int k = 0 ? 180 : v->z >= 0;
+		return k + acos(v->x / ComputeVertR(v));
+	}
+	HE_vert *LeftVert(HE_vert *v);
 
 protected:
 

@@ -34,6 +34,8 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_COMMAND(ID_STOP, OnStop)
 	ON_WM_TIMER()
 	ON_WM_HSCROLL()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -45,6 +47,7 @@ CCeramicCraftSimulationView::CCeramicCraftSimulationView()
 	m_GLPixelIndex = 0;
 	rtri = 0;
 	//step = 1;
+	reshape = false;
 
 }
 
@@ -193,6 +196,7 @@ void CCeramicCraftSimulationView::OnPaint()
 	glTranslatef(0.0f, -7.0f, -26.0f);						// Move Left 1.5 Units And Into The Screen 6.0
 	glRotatef(rtri, 0.0f, 1.0f, 0.0f);						// Rotate The Triangle On The Y axis ( NEW )
 
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	pDoc->m_pmesh->gl_draw(true);									// Done Drawing The Pyramid
@@ -280,6 +284,9 @@ bool CCeramicCraftSimulationView::InitGL()
 	glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
 	glDepthFunc(GL_LESS);                                // The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);    // Really Nice Perspective Calculations
+	glTranslatef(0.0f, -7.0f, -26.0f);						// Move Left 1.5 Units And Into The Screen 6.0
+	glRotatef(rtri, 0.0f, 1.0f, 0.0f);						// Rotate The Triangle On The Y axis ( NEW )
+
 	return TRUE;                                        // Initialization Went OK
 }
 
@@ -299,6 +306,8 @@ void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent==1)
 	{
 		rtri += step;
+		if (reshape)
+			OnReshape();
 		OnPaint();
 	}
 	CView::OnTimer(nIDEvent);
@@ -317,4 +326,53 @@ void CCeramicCraftSimulationView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar*
 	else
 		step = step;
 	CView::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+
+void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	reshape = true;
+
+	glLoadIdentity();
+	glTranslatef(0.0f, -7.0f, -26.0f);						// Move Left 1.5 Units And Into The Screen 6.0
+	glRotatef(rtri, 0.0f, 1.0f, 0.0f);						// Rotate The Triangle On The Y axis ( NEW )
+
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	winX = point.x;
+	winY = viewport[3] - point.y;
+	glReadBuffer(GL_BACK);
+	glReadPixels((int)winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+	gluUnProject(winX, winY, (double)winZ, modelview, projection, viewport, &object_x, &object_y, &object_z);
+	
+	TRACE("%lf ,%lf %lf\n", object_x, object_y, object_z);
+
+	CView::OnLButtonDown(nFlags, point);
+}
+
+
+void CCeramicCraftSimulationView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	reshape = false;
+	CView::OnLButtonUp(nFlags, point);
+}
+
+
+void CCeramicCraftSimulationView::OnReshape()
+{
+	CPoint point;
+	GetCursorPos(&point);
+	moveLength = point.x - winX;
+	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
+	if (!pDoc)
+	{
+		return;
+	}
+	pDoc->m_pmesh->Reshape(object_x, object_y, object_z, moveLength);
 }
