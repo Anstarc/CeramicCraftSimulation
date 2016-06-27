@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_COMMAND(ID_DEMO1, &CCeramicCraftSimulationView::OnDemo1)
 	ON_UPDATE_COMMAND_UI(ID_START, &CCeramicCraftSimulationView::OnUpdateStart)
 	ON_UPDATE_COMMAND_UI(ID_STOP, &CCeramicCraftSimulationView::OnUpdateStop)
+	ON_UPDATE_COMMAND_UI(ID_DEMO1, &CCeramicCraftSimulationView::OnUpdateDemo1)
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -187,7 +188,6 @@ void CCeramicCraftSimulationView::OnDestroy()
 void CCeramicCraftSimulationView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
-
 	// TODO: 在此处添加消息处理程序代码
 	width = cx;
 	height = cy;
@@ -221,6 +221,9 @@ void CCeramicCraftSimulationView::OnPaint()
 	glTranslatef(0.0f, -7.0f, -26.0f);
 	glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
@@ -232,7 +235,7 @@ void CCeramicCraftSimulationView::OnPaint()
 	pDoc->m_pmesh->gl_draw(true);
 
 	glPopMatrix();
-	//if (demo)
+	if (demo)
 		DrawCursor();
 
 	glFlush();
@@ -329,28 +332,27 @@ void CCeramicCraftSimulationView::OnStop()
 
 void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	CPoint point;
+	GetCursorPos(&point);
+	CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
+	if (!cmf)
+		TRACE("!cmf\n");
+	CString cs = CString("x=");
+	char cs2[10];
+	itoa(point.x, cs2, 10);
+	cs += CString(cs2);
+	cs += CString(" y=");
+	itoa(point.y, cs2, 10);
+	cs += CString(cs2);
+
+	LPCTSTR lpctstr = cs.GetString();
+	cmf->UpdateMessageText(lpctstr);
+
+
 	if (start&&nIDEvent==1)
 	{
-		CPoint point;
-		GetCursorPos(&point);
-		CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
-		if (!cmf)
-			TRACE("!cmf\n");
-		CString cs =  CString("x=");
-		char cs2[10];
-		itoa(point.x, cs2,10);
-		cs += CString(cs2);
-		cs += CString(" y=");
-		itoa(point.y, cs2, 10);
-		cs += CString(cs2);
-
-		LPCTSTR lpctstr = cs.GetString();
-		cmf->UpdateMessageText(lpctstr);
-
+		step = cmf->m_slider.GetPos() / 10.0 * 12;
 		rtri += step;
-// 		if (rtri >= 360)
-// 			rtri -= 360;
 		if (reshape)
 			OnReshape();
 		OnPaint();
@@ -375,6 +377,7 @@ LRESULT CCeramicCraftSimulationView::OnChangeStep(WPARAM wParam, LPARAM lParam)
 void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
+
 	reshape = true;
 
 	glLoadIdentity();
@@ -382,25 +385,40 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 	glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
 
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	glGetIntegerv(GL_VIEWPORT, viewport);
-
-	winX = point.x;
-	winY = viewport[3] - point.y;
+	//glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	//glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	//glGetIntegerv(GL_VIEWPORT, viewport);
+	TRACE("view:%d\n", (int)viewport[3]);
+	viewport[3] = 653;
+	//if (viewport[3] - point.y < 70)
+	//	return;
+	if (!demo)
+	{
+		winX = point.x;
+		winY = viewport[3] - point.y;
+	}
+	else
+	{
+		winX = cursorPoint.x;
+		winY = viewport[3] - cursorPoint.y;
+	}
+	TRACE("%d %d\n", (int)winX, (int)winY);
 	glReadBuffer(GL_BACK);
 	glReadPixels((int)winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 	gluUnProject(winX, winY, (double)winZ, modelview, projection, viewport, &object_x, &object_y, &object_z);
 	
-	//TRACE("%lf ,%lf %lf\n", object_x, object_y, object_z);
+	TRACE("%lf ,%lf %lf\n", object_x, object_y, object_z);
 
-	currentVertA = rtri;
+	firstVertA = rtri;
+	currentVertA = 0;
 	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
 	if (!pDoc)
 		return;
 	currentVert = pDoc->m_pmesh->NearestVert(object_x, object_y, object_z);
-	firstVert = currentVert;
-	firstMoveLength = 0;
+	TRACE("%f %f %f\n", currentVert->x, currentVert->y, currentVert->z);
+
+	//firstVert = currentVert;
+	//firstMoveLength = 0;
 
 	CView::OnLButtonDown(nFlags, point);
 }
@@ -416,10 +434,17 @@ void CCeramicCraftSimulationView::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CCeramicCraftSimulationView::OnReshape()
 {
-	CPoint point;
-	GetCursorPos(&point);
+	if (!demo)
+	{
+		CPoint point;
+		GetCursorPos(&point);
+		moveLength = point.x - winX;
 
-	moveLength = point.x - winX;
+	}
+	else
+		moveLength = cursorPoint.x - winX;
+
+
 	if (moveLength < -490)
 		moveLength = -490;
 
@@ -428,17 +453,24 @@ void CCeramicCraftSimulationView::OnReshape()
 	if (!pDoc)
 		return;
 
-	if (rtri - currentVertA >= 12)
+	if (rtri - firstVertA >= 12)
+	{
+		firstVertA += 12;
+		currentVertA += 12;
 		currentVert = pDoc->m_pmesh->LeftVert(currentVert);
+	}
+	//TRACE("%f %f\n", firstVertA, currentVertA);
+	if (!currentVert)
+		TRACE("!currentVert\n");
 
-	if (rtri - currentVertA >= 360)
+	if (currentVertA >= 360)
 	{
 		reshape = false;
 		return;
 	}
 
 	//TRACE("%f %f %f\n", currentVert->x, currentVert->y, currentVert->z);
-
+	TRACE("三维坐标:%f %f %f\n",currentVert->x, currentVert->y, currentVert->z);
 	pDoc->m_pmesh->Reshape(currentVert, moveLength / 100);
 
 	//OnOptimize(pDoc->m_pmesh);
@@ -459,9 +491,9 @@ void CCeramicCraftSimulationView::OnDemo1()
 {
 	// TODO:  在此添加命令处理程序代码
 	CWinThread* pThread = NULL;
+	demo = true;
 	CreateThread(&pThread);
 	StartThread(pThread);
-	demo = true;
 }
 
 
@@ -489,6 +521,12 @@ void CCeramicCraftSimulationView::OnUpdateStop(CCmdUI *pCmdUI)
 	pCmdUI->Enable(start);
 }
 
+void CCeramicCraftSimulationView::OnUpdateDemo1(CCmdUI *pCmdUI)
+{
+	// TODO:  在此添加命令更新用户界面处理程序代码
+	pCmdUI->Enable(!demo);
+}
+
 
 
 UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
@@ -498,15 +536,18 @@ UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
 	cccv->start = true;
 
 	GetCursorPos(&cccv->cursorPoint);
-	cccv->cursorPoint.x = 1080;
-	cccv->cursorPoint.y = 650;
+	cccv->cursorPoint.x = (int)(1080.0 / 1912.0 * cccv->width);
+	cccv->cursorPoint.y = (int)(650.0 / 950.0 * cccv->height);
+	Sleep(100);
 
 	cccv->OnLButtonDown(0, cccv->cursorPoint);
-	cccv->cursorPoint.x = 1150;
-	cccv->cursorPoint.y = 650;
+	cccv->reshape = true;
+	cccv->cursorPoint.x = (int)(1250.0 / 1912.0 * cccv->width);
+	cccv->cursorPoint.y = (int)(650.0 / 950.0 * cccv->height);
 
+	//cccv->SuspendThread()
 	Sleep(3100);
-	cccv->OnLButtonUp(0, NULL);
+	cccv->OnLButtonUp(0, cccv->cursorPoint);
 
 	cccv->demo = false;
 	return 0;
@@ -521,26 +562,30 @@ void CCeramicCraftSimulationView::DrawCursor()
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(20 * (float)x[2] / width, 20 * (float)y[2] / height, 0.0f);
-	TRACE("%d %d\n",x[2], width); 
-	TRACE("%f %f\n", 2.0f * x[2] / width, 2 * (float)y[2] / height);
-	glVertex3f(20 * (float)x[3] / width, 20 * (float)y[3] / height, 0.0f);
-	glVertex3f(20 * (float)x[4] / width, 20 * (float)y[4] / height, 0.0f);
-	glVertex3f(20 * (float)x[5] / width, 20 * (float)y[5] / height, 0.0f);
-	glVertex3f(20 * (float)x[0] / width, 20 * (float)y[0] / height, 0.0f);
-	glVertex3f(20 * (float)x[1] / width, 20 * (float)y[1] / height, 0.0f);
+	glVertex3f(2 * (float)x[2] / width, 2 * (float)y[2] / height, 1.0f);
+	//TRACE("%d %d\n",x[2], width); 
+	//TRACE("%f %f\n", 2.0f * x[2] / width, 2 * (float)y[2] / height);
+	glVertex3f(2 * (float)x[3] / width, 2 * (float)y[3] / height, 1.0f);
+	glVertex3f(2 * (float)x[4] / width, 2 * (float)y[4] / height, 1.0f);
+	glVertex3f(2 * (float)x[5] / width, 2 * (float)y[5] / height, 1.0f);
+	glVertex3f(2 * (float)x[0] / width, 2 * (float)y[0] / height, 1.0f);
+	glVertex3f(2 * (float)x[1] / width, 2 * (float)y[1] / height, 1.0f);
 	glEnd();
 	glBegin(GL_TRIANGLES);
-	glVertex3f(20 * (float)x[0] / width, 20 * (float)y[0] / height, 0.0f);
-	glVertex3f(20 * (float)x[5] / width, 20 * (float)y[5] / height, 0.0f);
-	glVertex3f(20 * (float)x[6] / width, 20 * (float)y[6] / height, 0.0f);
+	glVertex3f(2 * (float)x[0] / width, 2 * (float)y[0] / height, 1.0f);
+	glVertex3f(2 * (float)x[5] / width, 2 * (float)y[5] / height, 1.0f);
+	glVertex3f(2 * (float)x[6] / width, 2 * (float)y[6] / height, 1.0f);
 	glEnd();
 	
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_LINE_LOOP);
 	for (int i = 0; i < 7;i++)
 	{
-		glVertex3f(20 * (float)x[i] / width, 20 * (float)y[i] / height, 0.0f);
+		glVertex3f(2 * (float)x[i] / width, 2 * (float)y[i] / height, 1.0f);
 	}
 	glEnd();
+
+	TRACE("鼠标坐标：%d %d\n", cursorPoint.x, cursorPoint.y);
+
 }
+

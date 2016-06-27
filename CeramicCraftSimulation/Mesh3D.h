@@ -2,7 +2,7 @@
 
 
 //Author: Liu Yang
-
+//Overwrite by Li Chunpeng
 
 //for understanding halfedge structure,  please read the article in http://www.flipcode.com/articles/article_halfedge.shtml
 

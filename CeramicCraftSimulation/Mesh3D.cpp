@@ -979,7 +979,7 @@ HE_vert * Mesh3D::NearestVert(float x, float y, float z)
 
 void Mesh3D::Reshape(HE_vert* v, float move)
 {
-
+	TRACE("Reshape id:%d\n", v->id);
 	v->x *= (move / ComputeVertR(v) + 1);
 	v->z *= (move / ComputeVertR(v) + 1);
 
@@ -1000,11 +1000,11 @@ HE_vert *Mesh3D::LeftVert(HE_vert *v)
 	{
 		currentVert = edge->vert;
 		//TRACE("相邻点：%lf ,%lf %lf\n", currentVert->x, currentVert->y, currentVert->z);
-		//RACE("角度：%f\n", ComputeVertA(v));
-
-		if ((ComputeVertA(currentVert) > ComputeVertA(v) || (ComputeVertA(currentVert)<0.6 && ComputeVertA(v)>6)) && fabs(currentVert->y - v->y) < 0.1)
+		//TRACE("角度：%f\n", ComputeVertA(currentVert));
+		
+		if ((ComputeVertA(currentVert) > ComputeVertA(v) || (ComputeVertA(currentVert)<1 && ComputeVertA(v)>5)) && fabs(currentVert->y - v->y) < 0.1)
 		{
-			leftVert = currentVert;
+			leftVert = currentVert; 
 			break;
 		}
 		edge = edge->pair;
@@ -1018,7 +1018,9 @@ HE_vert *Mesh3D::LeftVert(HE_vert *v)
 float Mesh3D::ComputeVertA(HE_vert *v)
 {
 	float k = acos(v->x / ComputeVertR(v));
-	if (v->z <= 0 && v->x != 5)
+	if (v->z <= 0.0f && v->x != 5.0f)
 		k = 2 * PI - k;
+	if (fabs(v->z) < 0.0001 && fabs(v->x - 5) < 0.0001)
+		k = 0;
 	return k;
 }

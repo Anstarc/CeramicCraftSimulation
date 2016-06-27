@@ -18,7 +18,7 @@ public:
 	int m_GLPixelIndex;
 	HGLRC m_hGLContext;
 
-	GLfloat rtri,currentVertA;
+	GLfloat rtri, currentVertA, firstVertA;
 	HE_vert* currentVert;
 	float step = 12;
 	bool start;
@@ -92,6 +92,7 @@ public:
 	void CreateThread(CWinThread** pThread);
 	void StartThread(CWinThread* pThread);
 	void DrawCursor();
+	afx_msg void OnUpdateDemo1(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // CeramicCraftSimulationView.cpp 中的调试版本

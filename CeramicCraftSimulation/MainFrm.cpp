@@ -72,7 +72,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_slider.Create(WS_CHILD | WS_VISIBLE  ,rect, this, IDC_SLIDER);
 
 	m_slider.SetRange(1, 100);
-	m_slider.SetPos(20);
+	m_slider.SetPos(10);
 
 
 	///////////////////////////////
@@ -146,11 +146,11 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		CCeramicCraftSimulationView* cccv = (CCeramicCraftSimulationView*)MDIGetActive()->GetActiveView();
 		//SendMessage(GetTopWindow(NULL)->m_hWnd, WM_HSCROLL, 0, 0);
-		cccv->step = nPos / 10.0 * 12;
+		//cccv->step = nPos / 10.0 * 12;
 		//cccv->SendMessage(WM_TIMER);
 		//::SendMessage(cccv->GetSafeHwnd(), WM_CHANGESTEP, nSBCode, nPos);
 		//cccv->SendMessage( WM_CHANGESTEP, nSBCode, nPos);
-		cccv->SendMessage(WM_HSCROLL);
+		//cccv->SendMessage(WM_HSCROLL);
 	}
 	CMDIFrameWnd::OnHScroll(nSBCode, nPos, pScrollBar);
 	return;
