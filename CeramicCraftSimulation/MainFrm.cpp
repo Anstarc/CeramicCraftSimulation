@@ -6,6 +6,8 @@
 #include "CeramicCraftSimulation.h"
 
 #include "MainFrm.h"
+#include "CeramicCraftSimulationView.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -142,10 +144,16 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 	if (pScrollBar == GetDlgItem(IDC_SLIDER))
 	{
-		step = nPos / 10.0 * 12;
+		CCeramicCraftSimulationView* cccv = (CCeramicCraftSimulationView*)MDIGetActive()->GetActiveView();
+		//SendMessage(GetTopWindow(NULL)->m_hWnd, WM_HSCROLL, 0, 0);
+		//cccv->step = nPos / 10.0 * 12;
+		//cccv->SendMessage(WM_TIMER);
+		//::SendMessage(cccv->GetSafeHwnd(), WM_CHANGESTEP, nSBCode, nPos);
+		//cccv->SendMessage( WM_CHANGESTEP, nSBCode, nPos);
+		cccv->SendMessage(WM_HSCROLL);
 	}
-	//GetActiveView()->SendMessage(WM_HSCROLL);
 	CMDIFrameWnd::OnHScroll(nSBCode, nPos, pScrollBar);
+	return;
 }
 
 

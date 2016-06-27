@@ -22,6 +22,9 @@
 
 // CCeramicCraftSimulationView
 
+static UINT WM_CHANGESTEP = RegisterWindowMessage((LPCWSTR)"ChangeStep");
+
+
 IMPLEMENT_DYNCREATE(CCeramicCraftSimulationView, CView)
 
 BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
@@ -39,6 +42,7 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_WM_HSCROLL()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
+	ON_REGISTERED_MESSAGE(WM_CHANGESTEP, OnChangeStep)
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -318,17 +322,14 @@ void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 
 
 
-void CCeramicCraftSimulationView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+LRESULT CCeramicCraftSimulationView::OnChangeStep(WPARAM wParam, LPARAM lParam)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
 
-	if (pScrollBar == GetDlgItem(IDC_SLIDER))
-	{
-		step = nPos / 10.0;
-	}
-	else
-		step = step;
-	CView::OnHScroll(nSBCode, nPos, pScrollBar);
+	step = lParam / 10.0 * 12;
+	//TRACE("收到消息");
+
+	return 0;
 }
 
 
@@ -353,7 +354,7 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 	glReadPixels((int)winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 	gluUnProject(winX, winY, (double)winZ, modelview, projection, viewport, &object_x, &object_y, &object_z);
 	
-	TRACE("%lf ,%lf %lf\n", object_x, object_y, object_z);
+	//TRACE("%lf ,%lf %lf\n", object_x, object_y, object_z);
 
 	currentVertA = rtri;
 	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
@@ -379,15 +380,8 @@ void CCeramicCraftSimulationView::OnReshape()
 {
 	CPoint point;
 	GetCursorPos(&point);
-	//if (rtri - currentVertA >= 360)
-	//{
-	//	winX += firstMoveLength;
-	//	currentVertA -= 360;
 
-	//}
-
-	//if (firstMoveLength==0&&currentVert==firstVert)
-		firstMoveLength = moveLength = point.x - winX;
+	moveLength = point.x - winX;
 
 
 	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
@@ -403,11 +397,11 @@ void CCeramicCraftSimulationView::OnReshape()
 		return;
 	}
 
-	TRACE("%f %f %f\n", currentVert->x, currentVert->y, currentVert->z);
+	//TRACE("%f %f %f\n", currentVert->x, currentVert->y, currentVert->z);
 
 	pDoc->m_pmesh->Reshape(currentVert, moveLength / 100);
 
-	OnOptimize(pDoc->m_pmesh);
+	//OnOptimize(pDoc->m_pmesh);
 }
 
 

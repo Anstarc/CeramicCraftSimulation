@@ -3,7 +3,8 @@
 //
 
 #pragma once
-
+#include "Mesh3D.h"
+#include "CeramicCraftSimulationDoc.h"
 
 class CCeramicCraftSimulationView : public CView
 {
@@ -19,6 +20,8 @@ public:
 
 	GLfloat rtri,currentVertA;
 	HE_vert* currentVert;
+	float step = 12;
+
 
 	HE_vert* firstVert;
 	float firstMoveLength;
@@ -65,13 +68,14 @@ public:
 	afx_msg void OnStart();
 	afx_msg void OnStop();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	//afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg LRESULT OnChangeStep(WPARAM wParam, LPARAM lParam);
 
 	bool SetWindowPixelFormate(HDC hDC);
 	bool CreateViewGLContext(HDC hDC);
 	bool InitGL();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	void OnReshape();
 	void OnOptimize(Mesh3D* m_pmesh);
 };

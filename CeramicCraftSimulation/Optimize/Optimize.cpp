@@ -1,8 +1,9 @@
-#include "StdAfx.h"
+#include "../stdafx.h"
 #include "Optimize.h"
 
 
 OptimizeParameter* MeshOptimization::opp;
+PTR_VERTEX_LIST MeshOptimization::vertex_list;
 /////////////////////////////////////////////////////////////////////////
 void MeshOptimization::UpdateMesh(double* x)
 {
@@ -165,19 +166,24 @@ void MeshOptimization::Init()
 	std::cout.precision(16);
 	std::cout << std::scientific;
 
-	int N = opp->mm_pmesh->get_num_of_vertices_list() * 3;
+	int N = opp->mm_pmesh->get_num_of_vertices_list() * 2 - 4;
 	std::vector<double> x(N);
 
 
-	PTR_VERTEX_LIST vertex_list = opp->mm_pmesh->get_vertices_list();
-	VERTEX_ITER     viter = vertex_list->begin();
+	PTR_VERTEX_LIST vertex_list2 = opp->mm_pmesh->get_vertices_list();
+	VERTEX_ITER     viter = vertex_list2->begin();
 
-	for (; viter != vertex_list->end(); viter++)
+	for (; viter != vertex_list2->end(); viter++)
 	{
- 		x[(*viter)->id * 3] = (*viter)->x;
- 		x[(*viter)->id * 3 + 1] = (*viter)->y;
- 		x[(*viter)->id * 3 + 2] = (*viter)->z;
+		if ((*viter)->x*(*viter)->x + (*viter)->z*(*viter)->z > 49)
+		{
+			vertex_list->push_back(*viter);
+			x[(*viter)->id * 3] = (*viter)->x;
+			x[(*viter)->id * 3 + 1] = (*viter)->y;
+		}
+
 	}
+
 
 
 	int M = 7;

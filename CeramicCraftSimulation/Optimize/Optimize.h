@@ -8,8 +8,6 @@
 
 #include "../HLBFGS/HLBFGS.h"
 
-#include <iostream>
-
 #include "OptimizationParameter.h"
 
 
@@ -26,4 +24,6 @@ public:
 	static void UpdateMesh(double* x);
 
 	static OptimizeParameter* opp;
+	static PTR_VERTEX_LIST vertex_list;
+
 };
