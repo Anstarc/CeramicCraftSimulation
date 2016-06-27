@@ -36,6 +36,10 @@ public:
 	float moveLength;
 	bool reshape;
 
+	bool demo;
+	CPoint cursorPoint;
+	int *x,*y;
+	int width, height;
 // 操作
 public:
 
@@ -87,6 +91,7 @@ public:
 	static UINT ThreadFun(LPVOID pParam);
 	void CreateThread(CWinThread** pThread);
 	void StartThread(CWinThread* pThread);
+	void DrawCursor();
 };
 
 #ifndef _DEBUG  // CeramicCraftSimulationView.cpp 中的调试版本

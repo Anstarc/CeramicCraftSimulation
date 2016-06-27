@@ -983,7 +983,7 @@ void Mesh3D::Reshape(HE_vert* v, float move)
 	v->x *= (move / ComputeVertR(v) + 1);
 	v->z *= (move / ComputeVertR(v) + 1);
 
-	ReshapeNearVert(v->id, move);
+	//ReshapeNearVert(v->id, move);
 }
 
 void Mesh3D::ReshapeNearVert(int id, float move)

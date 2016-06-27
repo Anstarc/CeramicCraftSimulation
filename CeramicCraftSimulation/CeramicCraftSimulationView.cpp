@@ -63,6 +63,14 @@ CCeramicCraftSimulationView::CCeramicCraftSimulationView()
 	//step = 1;
 	reshape = false;
 	start = false;
+
+	x = (int *)malloc(7 * sizeof(int));
+	y = (int *)malloc(7 * sizeof(int));
+	x[0] = 0; x[1] = 0; x[2] = 4; x[3] = 8; x[4] = 9; x[5] = 8; x[6] = 18;
+	y[0] = 18; y[1] = 2; y[2] = 14; y[3] = 0; y[4] = 0; y[5] = 6; y[6] = 7;
+	demo = false;
+	//const int x[7] = { 0, 0, 4, 8, 9, 8, 18 };
+	//const int y[7] = { 18, 2, 14, 0, 0, 6, 7 };
 }
 
 CCeramicCraftSimulationView::~CCeramicCraftSimulationView()
@@ -181,7 +189,6 @@ void CCeramicCraftSimulationView::OnSize(UINT nType, int cx, int cy)
 	CView::OnSize(nType, cx, cy);
 
 	// TODO: 在此处添加消息处理程序代码
-	GLsizei width, height;
 	width = cx;
 	height = cy;
 	if (height == 0)                                        // Prevent A Divide By Zero By
@@ -207,20 +214,27 @@ void CCeramicCraftSimulationView::OnPaint()
 		return;
 
 	CPaintDC dc(this); // device context for painting
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
-	glLoadIdentity();									// Reset The Current Modelview Matrix
-	glTranslatef(0.0f, -7.0f, -26.0f);						// Move Left 1.5 Units And Into The Screen 6.0
-	glRotatef(rtri, 0.0f, 1.0f, 0.0f);						// Rotate The Triangle On The Y axis ( NEW )
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glLoadIdentity();
+	glPushMatrix();
+
+	glTranslatef(0.0f, -7.0f, -26.0f);
+	glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-	pDoc->m_pmesh->gl_draw(true);									// Done Drawing The Pyramid
+	pDoc->m_pmesh->gl_draw(true);
 
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glColor4f(0.725f, 0.627f, 0.510f, 1.0f);
-	pDoc->m_pmesh->gl_draw(true);	                              // 正方形绘制结束
+	pDoc->m_pmesh->gl_draw(true);
+
+	glPopMatrix();
+	//if (demo)
+		DrawCursor();
+
 	glFlush();
 	SwapBuffers(dc.m_hDC);
 }
@@ -285,8 +299,6 @@ bool CCeramicCraftSimulationView::CreateViewGLContext(HDC hDC)
 
 	if (wglMakeCurrent(hDC, m_hGLContext) == FALSE)
 		return FALSE;
-
-	//g_FontListID = CreateOpenGLFont(_T("Arial"), FONT_HEIGHT);
 
 	return TRUE;
 }
@@ -366,8 +378,8 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 	reshape = true;
 
 	glLoadIdentity();
-	glTranslatef(0.0f, -7.0f, -26.0f);						// Move Left 1.5 Units And Into The Screen 6.0
-	glRotatef(rtri, 0.0f, 1.0f, 0.0f);						// Rotate The Triangle On The Y axis ( NEW )
+	glTranslatef(0.0f, -7.0f, -26.0f);
+	glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
 
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
@@ -449,6 +461,7 @@ void CCeramicCraftSimulationView::OnDemo1()
 	CWinThread* pThread = NULL;
 	CreateThread(&pThread);
 	StartThread(pThread);
+	demo = true;
 }
 
 
@@ -482,7 +495,52 @@ UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
 
 	CCeramicCraftSimulationView* cccv = (CCeramicCraftSimulationView*)pParam;
 
-	
+	cccv->start = true;
 
+	GetCursorPos(&cccv->cursorPoint);
+	cccv->cursorPoint.x = 1080;
+	cccv->cursorPoint.y = 650;
+
+	cccv->OnLButtonDown(0, cccv->cursorPoint);
+	cccv->cursorPoint.x = 1150;
+	cccv->cursorPoint.y = 650;
+
+	Sleep(3100);
+	cccv->OnLButtonUp(0, NULL);
+
+	cccv->demo = false;
 	return 0;
+}
+
+
+
+void CCeramicCraftSimulationView::DrawCursor()
+{
+	//glLoadIdentity();
+	glTranslatef(2 * (float)cursorPoint.x / width, 2 * (float)cursorPoint.y / height, 0.0f);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(20 * (float)x[2] / width, 20 * (float)y[2] / height, 0.0f);
+	TRACE("%d %d\n",x[2], width); 
+	TRACE("%f %f\n", 2.0f * x[2] / width, 2 * (float)y[2] / height);
+	glVertex3f(20 * (float)x[3] / width, 20 * (float)y[3] / height, 0.0f);
+	glVertex3f(20 * (float)x[4] / width, 20 * (float)y[4] / height, 0.0f);
+	glVertex3f(20 * (float)x[5] / width, 20 * (float)y[5] / height, 0.0f);
+	glVertex3f(20 * (float)x[0] / width, 20 * (float)y[0] / height, 0.0f);
+	glVertex3f(20 * (float)x[1] / width, 20 * (float)y[1] / height, 0.0f);
+	glEnd();
+	glBegin(GL_TRIANGLES);
+	glVertex3f(20 * (float)x[0] / width, 20 * (float)y[0] / height, 0.0f);
+	glVertex3f(20 * (float)x[5] / width, 20 * (float)y[5] / height, 0.0f);
+	glVertex3f(20 * (float)x[6] / width, 20 * (float)y[6] / height, 0.0f);
+	glEnd();
+	
+	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+	glBegin(GL_LINE_LOOP);
+	for (int i = 0; i < 7;i++)
+	{
+		glVertex3f(20 * (float)x[i] / width, 20 * (float)y[i] / height, 0.0f);
+	}
+	glEnd();
 }
