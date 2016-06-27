@@ -11,6 +11,9 @@
 
 #include "CeramicCraftSimulationDoc.h"
 #include "CeramicCraftSimulationView.h"
+#include "./Optimize/Optimize.h"
+#include "./Optimize/OptimizationParameter.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -304,8 +307,8 @@ void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent==1)
 	{
 		rtri += step;
-		if (rtri >= 360)
-			rtri -= 360;
+// 		if (rtri >= 360)
+// 			rtri -= 360;
 		if (reshape)
 			OnReshape();
 		OnPaint();
@@ -367,7 +370,7 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 void CCeramicCraftSimulationView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	//reshape = false;
+	reshape = false;
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -393,10 +396,26 @@ void CCeramicCraftSimulationView::OnReshape()
 
 	if (rtri - currentVertA >= 12)
 		currentVert = pDoc->m_pmesh->LeftVert(currentVert);
-	if (!currentVert){
-		TRACE("!!currentVert Invalued\n");
+
+	if (rtri - currentVertA >= 360)
+	{
+		reshape = false;
+		return;
 	}
+
 	TRACE("%f %f %f\n", currentVert->x, currentVert->y, currentVert->z);
 
 	pDoc->m_pmesh->Reshape(currentVert, moveLength / 100);
+
+	OnOptimize(pDoc->m_pmesh);
+}
+
+
+void CCeramicCraftSimulationView::OnOptimize(Mesh3D* m_pmesh)
+{
+	OptimizeParameter *opp = new OptimizeParameter(m_pmesh);
+	MeshOptimization::opp = opp;
+	MeshOptimization::Init();
+	delete opp;
+
 }

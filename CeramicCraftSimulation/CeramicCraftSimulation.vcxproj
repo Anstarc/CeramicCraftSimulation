@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -105,9 +105,17 @@
     <ClInclude Include="CeramicCraftSimulationView.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="HE_Struct.h" />
+    <ClInclude Include="HLBFGS\HLBFGS.h" />
+    <ClInclude Include="HLBFGS\HLBFGS_BLAS.h" />
+    <ClInclude Include="HLBFGS\ICFS.h" />
+    <ClInclude Include="HLBFGS\LineSearch.h" />
+    <ClInclude Include="HLBFGS\Lite_Sparse_Matrix.h" />
+    <ClInclude Include="HLBFGS\Sparse_Entry.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mesh3D.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Optimize\OptimizationParameter.h" />
+    <ClInclude Include="Optimize\Optimize.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -117,9 +125,26 @@
     <ClCompile Include="CeramicCraftSimulationDoc.cpp" />
     <ClCompile Include="CeramicCraftSimulationView.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
+    <ClCompile Include="HLBFGS\HLBFGS.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HLBFGS\HLBFGS_BLAS.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HLBFGS\ICFS.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HLBFGS\LineSearch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HLBFGS\Lite_Sparse_Matrix.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Mesh3D.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Optimize\OptimizationParameter.cpp" />
+    <ClCompile Include="Optimize\Optimize.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
