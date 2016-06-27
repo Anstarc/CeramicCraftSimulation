@@ -176,7 +176,7 @@ BEGIN
     END
     POPUP "ÑÝÊ¾"
     BEGIN
-        MENUITEM "Íë",                           ID_BOWL
+        MENUITEM "ÑÝÊ¾1",                         ID_DEMO1
     END
 END
 

@@ -21,6 +21,7 @@ public:
 	GLfloat rtri,currentVertA;
 	HE_vert* currentVert;
 	float step = 12;
+	bool start;
 
 
 	HE_vert* firstVert;
@@ -72,12 +73,20 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg LRESULT OnChangeStep(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnDemo1();
+	afx_msg void OnUpdateStart(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateStop(CCmdUI *pCmdUI);
 
 	bool SetWindowPixelFormate(HDC hDC);
 	bool CreateViewGLContext(HDC hDC);
 	bool InitGL();
 	void OnReshape();
 	void OnOptimize(Mesh3D* m_pmesh);
+
+	// 线程
+	static UINT ThreadFun(LPVOID pParam);
+	void CreateThread(CWinThread** pThread);
+	void StartThread(CWinThread* pThread);
 };
 
 #ifndef _DEBUG  // CeramicCraftSimulationView.cpp 中的调试版本

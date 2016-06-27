@@ -42,6 +42,7 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	bool CreatePalette();
 	LOGPALETTE *pLP;
+	void UpdateMessageText(LPCTSTR text);
 };
 
 

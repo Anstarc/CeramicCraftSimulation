@@ -11,8 +11,12 @@
 
 #include "CeramicCraftSimulationDoc.h"
 #include "CeramicCraftSimulationView.h"
+#include "MainFrm.h"
+
 #include "./Optimize/Optimize.h"
 #include "./Optimize/OptimizationParameter.h"
+
+#include <cstring>
 
 
 #ifdef _DEBUG
@@ -43,6 +47,9 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_REGISTERED_MESSAGE(WM_CHANGESTEP, OnChangeStep)
+	ON_COMMAND(ID_DEMO1, &CCeramicCraftSimulationView::OnDemo1)
+	ON_UPDATE_COMMAND_UI(ID_START, &CCeramicCraftSimulationView::OnUpdateStart)
+	ON_UPDATE_COMMAND_UI(ID_STOP, &CCeramicCraftSimulationView::OnUpdateStop)
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -55,7 +62,7 @@ CCeramicCraftSimulationView::CCeramicCraftSimulationView()
 	rtri = 0;
 	//step = 1;
 	reshape = false;
-
+	start = false;
 }
 
 CCeramicCraftSimulationView::~CCeramicCraftSimulationView()
@@ -129,6 +136,8 @@ CCeramicCraftSimulationDoc* CCeramicCraftSimulationView::GetDocument() const // 
 
 int CCeramicCraftSimulationView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+	SetTimer(1, 100, NULL);
+
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
@@ -297,19 +306,36 @@ bool CCeramicCraftSimulationView::InitGL()
 
 void CCeramicCraftSimulationView::OnStart()
 {
-	SetTimer(1, 100, NULL);
+	start = true;
 }
 void CCeramicCraftSimulationView::OnStop()
 {
-	KillTimer(1);
+	start = false;
+	rtri = 0;
 }
 
 
 void CCeramicCraftSimulationView::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	if (nIDEvent==1)
+	if (start&&nIDEvent==1)
 	{
+		CPoint point;
+		GetCursorPos(&point);
+		CMainFrame* cmf = (CMainFrame*)AfxGetMainWnd();
+		if (!cmf)
+			TRACE("!cmf\n");
+		CString cs =  CString("x=");
+		char cs2[10];
+		itoa(point.x, cs2,10);
+		cs += CString(cs2);
+		cs += CString(" y=");
+		itoa(point.y, cs2, 10);
+		cs += CString(cs2);
+
+		LPCTSTR lpctstr = cs.GetString();
+		cmf->UpdateMessageText(lpctstr);
+
 		rtri += step;
 // 		if (rtri >= 360)
 // 			rtri -= 360;
@@ -382,6 +408,8 @@ void CCeramicCraftSimulationView::OnReshape()
 	GetCursorPos(&point);
 
 	moveLength = point.x - winX;
+	if (moveLength < -490)
+		moveLength = -490;
 
 
 	CCeramicCraftSimulationDoc *pDoc = (CCeramicCraftSimulationDoc *)GetDocument();
@@ -412,4 +440,49 @@ void CCeramicCraftSimulationView::OnOptimize(Mesh3D* m_pmesh)
 	MeshOptimization::Init();
 	delete opp;
 
+}
+
+
+void CCeramicCraftSimulationView::OnDemo1()
+{
+	// TODO:  在此添加命令处理程序代码
+	CWinThread* pThread = NULL;
+	CreateThread(&pThread);
+	StartThread(pThread);
+}
+
+
+void CCeramicCraftSimulationView::CreateThread(CWinThread** pThread)
+{
+	*pThread = ::AfxBeginThread(ThreadFun, (LPVOID)this, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+}
+
+void CCeramicCraftSimulationView::StartThread(CWinThread* pThread)
+{
+	pThread->ResumeThread();
+}
+
+
+
+void CCeramicCraftSimulationView::OnUpdateStart(CCmdUI *pCmdUI)
+{
+	// TODO:  在此添加命令更新用户界面处理程序代码
+	pCmdUI->Enable(!start);
+}
+
+void CCeramicCraftSimulationView::OnUpdateStop(CCmdUI *pCmdUI)
+{
+	// TODO:  在此添加命令更新用户界面处理程序代码
+	pCmdUI->Enable(start);
+}
+
+
+
+UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
+
+	CCeramicCraftSimulationView* cccv = (CCeramicCraftSimulationView*)pParam;
+
+	
+
+	return 0;
 }

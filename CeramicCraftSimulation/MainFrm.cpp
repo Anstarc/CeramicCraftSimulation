@@ -146,7 +146,7 @@ void CMainFrame::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		CCeramicCraftSimulationView* cccv = (CCeramicCraftSimulationView*)MDIGetActive()->GetActiveView();
 		//SendMessage(GetTopWindow(NULL)->m_hWnd, WM_HSCROLL, 0, 0);
-		//cccv->step = nPos / 10.0 * 12;
+		cccv->step = nPos / 10.0 * 12;
 		//cccv->SendMessage(WM_TIMER);
 		//::SendMessage(cccv->GetSafeHwnd(), WM_CHANGESTEP, nSBCode, nPos);
 		//cccv->SendMessage( WM_CHANGESTEP, nSBCode, nPos);
@@ -175,4 +175,10 @@ bool CMainFrame::CreatePalette()
 	}
 	m_palette.CreatePalette(pLP);
 	return true;
+}
+
+
+void CMainFrame::UpdateMessageText(LPCTSTR text)
+{
+	SetMessageText(text);
 }

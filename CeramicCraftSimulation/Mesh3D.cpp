@@ -999,8 +999,8 @@ HE_vert *Mesh3D::LeftVert(HE_vert *v)
 	do
 	{
 		currentVert = edge->vert;
-		TRACE("相邻点：%lf ,%lf %lf\n", currentVert->x, currentVert->y, currentVert->z);
-		TRACE("角度：%f\n", ComputeVertA(v));
+		//TRACE("相邻点：%lf ,%lf %lf\n", currentVert->x, currentVert->y, currentVert->z);
+		//RACE("角度：%f\n", ComputeVertA(v));
 
 		if ((ComputeVertA(currentVert) > ComputeVertA(v) || (ComputeVertA(currentVert)<0.6 && ComputeVertA(v)>6)) && fabs(currentVert->y - v->y) < 0.1)
 		{
