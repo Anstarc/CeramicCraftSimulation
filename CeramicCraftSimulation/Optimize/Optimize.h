@@ -24,6 +24,6 @@ public:
 	static void UpdateMesh(double* x);
 
 	static OptimizeParameter* opp;
-	static PTR_VERTEX_LIST vertex_list;
+	static VERTEX_LIST vertex_list;
 
 };

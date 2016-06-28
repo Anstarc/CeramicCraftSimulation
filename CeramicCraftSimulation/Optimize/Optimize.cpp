@@ -3,18 +3,16 @@
 
 
 OptimizeParameter* MeshOptimization::opp;
-PTR_VERTEX_LIST MeshOptimization::vertex_list;
+VERTEX_LIST MeshOptimization::vertex_list;
 /////////////////////////////////////////////////////////////////////////
 void MeshOptimization::UpdateMesh(double* x)
 {
-	PTR_VERTEX_LIST vertex_list = opp->mm_pmesh->get_vertices_list();
-	VERTEX_ITER     viter = vertex_list->begin();
+	VERTEX_ITER	viter = vertex_list.begin();
 
-	for (; viter != vertex_list->end(); viter++)
+	for (int i = 0; viter != vertex_list.end(); viter++,i++)
 	{
-		(*viter)->x = x[(*viter)->id * 3];
-		(*viter)->y = x[(*viter)->id * 3+1];
-		(*viter)->z = x[(*viter)->id * 3+2];
+		(*viter)->x = x[i] * cos(opp->mm_pmesh->ComputeVertA(*viter));
+		(*viter)->z = x[i] * sin(opp->mm_pmesh->ComputeVertA(*viter));
 	}
 
 	opp->mm_pmesh->compute_all_normal();
@@ -30,10 +28,10 @@ void MeshOptimization::evalfunc(int N, double* x, double *prev_x, double* f, dou
 	double edge_x, edge_y, edge_z;
 	double length;
 
-	PTR_VERTEX_LIST vertex_list = opp->mm_pmesh->get_vertices_list();
-	VERTEX_ITER     viter = vertex_list->begin();
+	//PTR_VERTEX_LIST vertex_list = opp->mm_pmesh->get_vertices_list();
+	VERTEX_ITER     viter = vertex_list.begin();
 
-	for (; viter != vertex_list->end(); viter++)
+	for (int i = 0; viter != vertex_list.end(); viter++, i++)
 	{
 		HE_edge* t_edge = (*viter)->edge;
 		do 
@@ -42,21 +40,21 @@ void MeshOptimization::evalfunc(int N, double* x, double *prev_x, double* f, dou
 			edge_x = t_edge->vert->x - (*viter)->x;
 			edge_y = t_edge->vert->y - (*viter)->y;
 			edge_z = t_edge->vert->z - (*viter)->z;
+			if ((*viter)->x*(*viter)->x + (*viter)->z*(*viter)->z < 20)
+				continue;
 
 			length = sqrt(edge_x*edge_x + edge_y*edge_y + edge_z*edge_z);
-			if (length)
+			/*if (length)
 			{
 				edge_x /= length;
 				edge_y /= length;
 				edge_z /= length;
-			}
+			}*/
 
 			product = edge_x*(*viter)->normal[0] + edge_y*(*viter)->normal[1] + edge_z*(*viter)->normal[2];
 			*f += product*product;
 
-			g[(*viter)->id * 3] += -2 * product*(*viter)->normal[0];
-			g[(*viter)->id * 3 + 1] += -2 * product*(*viter)->normal[1];
-			g[(*viter)->id * 3 + 2] += -2 * product*(*viter)->normal[2];
+			g[i] += -2 * product* ((*viter)->normal[0] * cos(opp->mm_pmesh->ComputeVertA(*viter)) + (*viter)->normal[2] * sin(opp->mm_pmesh->ComputeVertA(*viter)));
 
 			//TRACE("%f %f %f\n", edge_x, edge_y, edge_z);
 			//TRACE("导数%d :%f\n", (*viter)->id * 3, g[(*viter)->id * 3]);
@@ -73,11 +71,11 @@ void MeshOptimization::evalfunc(int N, double* x, double *prev_x, double* f, dou
 void MeshOptimization::newiteration(int iter, int call_iter, double *x, double* f, double *g, double* gnorm)
 {
 	std::cout << iter <<": " << call_iter <<" " << *f <<" " << *gnorm  << std::endl;
-	TRACE("########################\n");
-	TRACE("迭代次数:%d\n", iter);
-	TRACE("函数调用次数:%d\n", call_iter);
-	TRACE("F(x):%f\n", *f);
-	TRACE("dF(x):%f\n", *g);
+	//TRACE("########################\n");
+	//TRACE("迭代次数:%d\n", iter);
+	//TRACE("函数调用次数:%d\n", call_iter);
+	//TRACE("F(x):%f\n", *f);
+	//TRACE("dF(x):%f\n", *g);
 }
 //////////////////////////////////////////////////////////////////////////
 void MeshOptimization::evalfunc_h(int N, double *x, double *prev_x, double *f, double *g, HESSIAN_MATRIX& hessian)
@@ -166,20 +164,19 @@ void MeshOptimization::Init()
 	std::cout.precision(16);
 	std::cout << std::scientific;
 
-	int N = opp->mm_pmesh->get_num_of_vertices_list() * 2 - 4;
-	std::vector<double> x(N);
+	int N = opp->mm_pmesh->get_num_of_vertices_list() -2;
 
+	std::vector<double> x;
 
 	PTR_VERTEX_LIST vertex_list2 = opp->mm_pmesh->get_vertices_list();
 	VERTEX_ITER     viter = vertex_list2->begin();
 
-	for (; viter != vertex_list2->end(); viter++)
+	for (int i=0; viter != vertex_list2->end(); viter++,i++)
 	{
-		if ((*viter)->x*(*viter)->x + (*viter)->z*(*viter)->z > 49)
+		if ((*viter)->x*(*viter)->x + (*viter)->z*(*viter)->z > 20)
 		{
-			vertex_list->push_back(*viter);
-			x[(*viter)->id * 3] = (*viter)->x;
-			x[(*viter)->id * 3 + 1] = (*viter)->y;
+			vertex_list.push_back(*viter);
+			x.push_back(opp->mm_pmesh->ComputeVertR(*viter));
 		}
 
 	}

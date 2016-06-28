@@ -104,7 +104,6 @@
     <ClInclude Include="CeramicCraftSimulationDoc.h" />
     <ClInclude Include="CeramicCraftSimulationView.h" />
     <ClInclude Include="ChildFrm.h" />
-    <ClInclude Include="HE_Struct.h" />
     <ClInclude Include="HLBFGS\HLBFGS.h" />
     <ClInclude Include="HLBFGS\HLBFGS_BLAS.h" />
     <ClInclude Include="HLBFGS\ICFS.h" />
@@ -113,7 +112,6 @@
     <ClInclude Include="HLBFGS\Sparse_Entry.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Mesh3D.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="Optimize\OptimizationParameter.h" />
     <ClInclude Include="Optimize\Optimize.h" />
     <ClInclude Include="Resource.h" />
@@ -142,7 +140,6 @@
     </ClCompile>
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Mesh3D.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Optimize\OptimizationParameter.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -245,9 +245,11 @@ void CCeramicCraftSimulationView::OnPaint()
 	}
 
 
+	glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glColor4f(0.725f, 0.627f, 0.510f, 1.0f);
 	pDoc->m_pmesh->gl_draw(true);
+	glDisable(GL_LIGHTING);
 
 	glPopMatrix();
 	if (demo)
@@ -330,6 +332,21 @@ bool CCeramicCraftSimulationView::InitGL()
 	glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
 	glDepthFunc(GL_LESS);                                // The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);    // Really Nice Perspective Calculations
+
+	GLfloat sun_light_position[] = { 1.0f, 1.0f, 1.0f };
+	GLfloat sun_light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	GLfloat sun_light_diffuse[] = { 0.725f, 0.627f, 0.510f, 0.6f };
+	GLfloat sun_light_specular[] = { 0.725f, 0.627f, 0.510f, 1.0f };
+
+	glLightfv(GL_LIGHT0, GL_POSITION, sun_light_position); //指定第0号光源的位置   
+	glLightfv(GL_LIGHT0, GL_AMBIENT, sun_light_ambient); //GL_AMBIENT表示各种光线照射到该材质上，  
+	//经过很多次反射后最终遗留在环境中的光线强度（颜色）  
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_light_diffuse); //漫反射后~~  
+	glLightfv(GL_LIGHT0, GL_SPECULAR, sun_light_specular);//镜面反射后~~~  
+
+	glEnable(GL_LIGHT0); //使用第0号光照  
+	//glEnable(GL_LIGHTING); //在后面的渲染中使用光照  
+
 
 	return TRUE;                                        // Initialization Went OK
 }
