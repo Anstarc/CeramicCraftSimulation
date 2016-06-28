@@ -22,6 +22,7 @@ public:
 	HE_vert* currentVert;
 	float step = 12;
 	bool start;
+	bool line;
 
 
 	HE_vert* firstVert;
@@ -93,6 +94,8 @@ public:
 	void StartThread(CWinThread* pThread);
 	void DrawCursor();
 	afx_msg void OnUpdateDemo1(CCmdUI *pCmdUI);
+//	afx_msg void OnLine();
+//	afx_msg void OnUpdateLine(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // CeramicCraftSimulationView.cpp 中的调试版本

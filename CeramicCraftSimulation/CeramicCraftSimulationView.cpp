@@ -51,6 +51,8 @@ BEGIN_MESSAGE_MAP(CCeramicCraftSimulationView, CView)
 	ON_UPDATE_COMMAND_UI(ID_START, &CCeramicCraftSimulationView::OnUpdateStart)
 	ON_UPDATE_COMMAND_UI(ID_STOP, &CCeramicCraftSimulationView::OnUpdateStop)
 	ON_UPDATE_COMMAND_UI(ID_DEMO1, &CCeramicCraftSimulationView::OnUpdateDemo1)
+	//ON_COMMAND(ID_LINE, &CCeramicCraftSimulationView::OnLine)
+	//ON_UPDATE_COMMAND_UI(ID_LINE, &CCeramicCraftSimulationView::OnUpdateLine)
 END_MESSAGE_MAP()
 
 // CCeramicCraftSimulationView 构造/析构
@@ -61,14 +63,15 @@ CCeramicCraftSimulationView::CCeramicCraftSimulationView()
 	m_hGLContext = NULL;
 	m_GLPixelIndex = 0;
 	rtri = 0;
+	line = false;
 	//step = 1;
 	reshape = false;
 	start = false;
 
 	x = (int *)malloc(7 * sizeof(int));
 	y = (int *)malloc(7 * sizeof(int));
-	x[0] = 0; x[1] = 0; x[2] = 4; x[3] = 8; x[4] = 9; x[5] = 8; x[6] = 18;
-	y[0] = 18; y[1] = 2; y[2] = 14; y[3] = 0; y[4] = 0; y[5] = 6; y[6] = 7;
+	x[0] = 0; x[1] = 0; x[2] = 4; x[3] = 7; x[4] = 12; x[5] = 8; x[6] = 14;
+	y[0] = 18; y[1] = 2; y[2] = 4; y[3] = 0; y[4] = 0; y[5] = 6; y[6] = 7;
 	demo = false;
 	//const int x[7] = { 0, 0, 4, 8, 9, 8, 18 };
 	//const int y[7] = { 18, 2, 14, 0, 0, 6, 7 };
@@ -213,6 +216,15 @@ void CCeramicCraftSimulationView::OnPaint()
 	if (pDoc->m_pmesh == NULL)
 		return;
 
+
+	glMatrixMode(GL_PROJECTION);                        // Select The Projection Matrix
+	glLoadIdentity();                                    // Reset The Projection Matrix
+	// Calculate The Aspect Ratio Of The Window
+	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);//透视投影
+	glMatrixMode(GL_MODELVIEW);                            // Select The Modelview Matrix
+	glLoadIdentity();
+
+
 	CPaintDC dc(this); // device context for painting
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	glLoadIdentity();
@@ -225,9 +237,12 @@ void CCeramicCraftSimulationView::OnPaint()
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-	pDoc->m_pmesh->gl_draw(true);
+	//if (line)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+		pDoc->m_pmesh->gl_draw(true);
+	}
 
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -385,13 +400,11 @@ void CCeramicCraftSimulationView::OnLButtonDown(UINT nFlags, CPoint point)
 	glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
 
-	//glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	//glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	//glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
 	TRACE("view:%d\n", (int)viewport[3]);
-	viewport[3] = 653;
-	//if (viewport[3] - point.y < 70)
-	//	return;
+
 	if (!demo)
 	{
 		winX = point.x;
@@ -538,7 +551,7 @@ UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
 	GetCursorPos(&cccv->cursorPoint);
 	cccv->cursorPoint.x = (int)(1080.0 / 1912.0 * cccv->width);
 	cccv->cursorPoint.y = (int)(650.0 / 950.0 * cccv->height);
-	Sleep(100);
+	Sleep(500);
 
 	cccv->OnLButtonDown(0, cccv->cursorPoint);
 	cccv->reshape = true;
@@ -546,7 +559,7 @@ UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
 	cccv->cursorPoint.y = (int)(650.0 / 950.0 * cccv->height);
 
 	//cccv->SuspendThread()
-	Sleep(3100);
+	Sleep(3200);
 	cccv->OnLButtonUp(0, cccv->cursorPoint);
 
 	cccv->demo = false;
@@ -557,35 +570,70 @@ UINT CCeramicCraftSimulationView::ThreadFun(LPVOID pParam){ //线程要调用的函数
 
 void CCeramicCraftSimulationView::DrawCursor()
 {
-	//glLoadIdentity();
-	glTranslatef(2 * (float)cursorPoint.x / width, 2 * (float)cursorPoint.y / height, 0.0f);
+	glLoadIdentity();
+	glTranslatef(0.0f, -7.0f, -26.0f);
+	//glRotatef(rtri, 0.0f, 1.0f, 0.0f);
+
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	TRACE("view:%d\n", (int)viewport[3]);
+
+	double winX, winY, winZ, object_x, object_y, object_z;
+	winX = cursorPoint.x;
+	winY = viewport[3] - cursorPoint.y;
+	
+	TRACE("%d %d\n", (int)winX, (int)winY);
+	glReadBuffer(GL_BACK);
+	glReadPixels((int)winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+	gluUnProject(winX, winY, (double)winZ, modelview, projection, viewport, &object_x, &object_y, &object_z);
+	TRACE("虚拟指针：%lf ,%lf %lf\n", object_x, object_y, object_z);
+
+	//glOrtho(-1.0f*width / 2, 1.0f*width / 2, -1.0f*height / 2, 1.0f*height / 2, -1.0f, 100.0f);
+	//glTranslatef(-cursorPoint.x/2.0f, -(viewport[3]-cursorPoint.y) / 2.0f, 0.0f);
+	glTranslatef(0.1f, 0.2f, -2.0f);
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(2 * (float)x[2] / width, 2 * (float)y[2] / height, 1.0f);
+	glVertex3f(x[2] / 200.0f + object_x, y[2] / 200.0f + object_y, object_z - 1);
 	//TRACE("%d %d\n",x[2], width); 
 	//TRACE("%f %f\n", 2.0f * x[2] / width, 2 * (float)y[2] / height);
-	glVertex3f(2 * (float)x[3] / width, 2 * (float)y[3] / height, 1.0f);
-	glVertex3f(2 * (float)x[4] / width, 2 * (float)y[4] / height, 1.0f);
-	glVertex3f(2 * (float)x[5] / width, 2 * (float)y[5] / height, 1.0f);
-	glVertex3f(2 * (float)x[0] / width, 2 * (float)y[0] / height, 1.0f);
-	glVertex3f(2 * (float)x[1] / width, 2 * (float)y[1] / height, 1.0f);
+	glVertex3f(x[3] / 200.0f + object_x, y[3] / 200.0f + object_y, object_z - 1);
+	glVertex3f(x[4] / 200.0f + object_x, y[4] / 200.0f + object_y, object_z - 1);
+	glVertex3f(x[5] / 200.0f + object_x, y[5] / 200.0f + object_y, object_z - 1);
+	glVertex3f(x[0] / 200.0f + object_x, y[0] / 200.0f + object_y, object_z - 1);
+	glVertex3f(x[1] / 200.0f + object_x, y[1] / 200.0f + object_y, object_z - 1);
 	glEnd();
 	glBegin(GL_TRIANGLES);
-	glVertex3f(2 * (float)x[0] / width, 2 * (float)y[0] / height, 1.0f);
-	glVertex3f(2 * (float)x[5] / width, 2 * (float)y[5] / height, 1.0f);
-	glVertex3f(2 * (float)x[6] / width, 2 * (float)y[6] / height, 1.0f);
+	glVertex3f(x[0] / 200.0f + object_x, y[0] / 200.0f + object_y, object_z - 1);
+	glVertex3f(x[5] / 200.0f + object_x, y[5] / 200.0f + object_y, object_z - 1);
+	glVertex3f(x[6] / 200.0f + object_x, y[6] / 200.0f + object_y, object_z - 1);
 	glEnd();
-	
+
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_LINE_LOOP);
-	for (int i = 0; i < 7;i++)
+	for (int i = 0; i < 7; i++)
 	{
-		glVertex3f(2 * (float)x[i] / width, 2 * (float)y[i] / height, 1.0f);
+		glVertex3f(x[i] / 200.0f + object_x, y[i] / 200.0f + object_y, object_z - 1);
 	}
 	glEnd();
 
-	TRACE("鼠标坐标：%d %d\n", cursorPoint.x, cursorPoint.y);
+	//TRACE("鼠标坐标：%d %d\n", cursorPoint.x, cursorPoint.y);
 
 }
 
+
+
+//void CCeramicCraftSimulationView::OnLine()
+//{
+//	// TODO:  在此添加命令处理程序代码
+//	line = !line;
+//}
+
+
+//void CCeramicCraftSimulationView::OnUpdateLine(CCmdUI *pCmdUI)
+//{
+//	// TODO:  在此添加命令更新用户界面处理程序代码
+//	pCmdUI->Enable(!line);
+//}
